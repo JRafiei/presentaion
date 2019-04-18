@@ -1,70 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="favicon.ico" rel="icon" type="image/x-icon" />
-    <title>Document</title>
-    <style>
-        body {
-            text-align: center;
-        }
-        .active {
-            display: block;
-        }
-        .deactive {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="favicon.ico" rel="icon" type="image/x-icon" />
+   <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <title>Document</title>
+  <style>
+    body {
+      text-align: center;
+    }
+    .active {
+      display: block;
+    }
+    .deactive {
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
-    <section id="sec-1" class="active"><img src="https://picsum.photos/400/200?image=1080" alt=""></section>
-    <section id="sec-2" class="deactive"><img src="https://picsum.photos/400/200?image=1081" alt=""></section>
-    <section id="sec-3" class="deactive"><img src="https://picsum.photos/400/200?image=1082" alt=""></section>
+  <div class="container">
+  <div class="card-panel hoverable">
+    <section id="sec-1" class="active">
+      <img class="responsive-img" src="https://picsum.photos/400/200?image=1080" alt="">
+    </section>
+    <section id="sec-2" class="deactive">
+      <img class="responsive-img" src="https://picsum.photos/400/200?image=1081" alt="">
+    </section>
+    <section id="sec-3" class="deactive">
+      <img class="responsive-img" src="https://picsum.photos/400/200?image=1082" alt="">
+    </section>
 
     <div class="btns">
-        <button id="next">next</button>
-        <button id="prev">previous</button>
+      <button class="waves-effect waves-light btn" id="prev">
+        <span>previous</span>
+        <i class="material-icons left">navigate_before</i>
+        </button>
+        <button class="waves-effect waves-light btn" id="next">
+          <span>next</span>
+          <i class="material-icons right">navigate_next</i>
+      </button>
     </div>
+  </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function(){
-            const ws = new WebSocket("ws://{{ WS_HOST }}:{{ WS_PORT }}/ws");
-            ws.onmessage = function (event) {
-                const elem_index = event.data;
+  <!-- Compiled and minified JavaScript -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const ws = new WebSocket("ws://{{ WS_HOST }}:{{ WS_PORT }}/ws");
+      ws.onmessage = function (event) {
+        const elem_index = event.data;
 
-                const sections = document.querySelectorAll('section');
-                sections.forEach(function (section) {
-                    section.className = 'deactive';
-                });
-                document.querySelector(`#sec-${elem_index}`).className = 'active';
-            };
+        const sections = document.querySelectorAll('section');
+        sections.forEach(function (section) {
+          section.className = 'deactive';
+        });
+        document.querySelector(`#sec-${elem_index}`).className = 'active';
+      };
 
-            const num_of_sections = document.getElementsByTagName('section').length;
-            const nextBtn = document.querySelector('#next');
-            const prevBtn = document.querySelector('#prev');
-            nextBtn.addEventListener('click', function(e){
-                const active_elem = document.querySelector('.active').getAttribute('id');
-                const active_id = parseInt(active_elem.split("-")[1]);
-                let next_id = active_id + 1;
-                if (active_id == num_of_sections){
-                    next_id = 1;
-                }
-                // console.log(next_id);
-                ws.send(next_id);
-            });
-            prevBtn.addEventListener('click', function(e){
-                const active_elem = document.querySelector('.active').getAttribute('id');
-                const active_id = parseInt(active_elem.split("-")[1]);
-                let prev_id = active_id - 1;
-                if (prev_id == 0){
-                    prev_id = num_of_sections;
-                }
-                // console.log(message);
-                ws.send(prev_id);
-            });
-        })
-    </script>
+      const num_of_sections = document.getElementsByTagName('section').length;
+      const nextBtn = document.querySelector('#next');
+      const prevBtn = document.querySelector('#prev');
+      nextBtn.addEventListener('click', function(e){
+        const active_elem = document.querySelector('.active').getAttribute('id');
+        const active_id = parseInt(active_elem.split("-")[1]);
+        let next_id = active_id + 1;
+        if (active_id == num_of_sections){
+          next_id = 1;
+        }
+        // console.log(next_id);
+        ws.send(next_id);
+      });
+      prevBtn.addEventListener('click', function(e){
+        const active_elem = document.querySelector('.active').getAttribute('id');
+        const active_id = parseInt(active_elem.split("-")[1]);
+        let prev_id = active_id - 1;
+        if (prev_id == 0){
+          prev_id = num_of_sections;
+        }
+        // console.log(message);
+        ws.send(prev_id);
+      });
+    })
+  </script>
 </body>
 </html>
