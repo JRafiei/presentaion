@@ -15,16 +15,34 @@
 
 <body>
   <div class="container">
-    <div class="card-panel hoverable">
+    <div class="card-panel">
+      {% if message %}
+        <div class="card-panel green accent-3">
+          <h5 class="white-text text-darken-2">{{ message }}</h5>
+        </div>
+      {% endif %}
+
       <h1>Add a new Item</h1>
       <form action="" method="post", enctype="multipart/form-data">
-        <input type="text" name="title" id="" placeholder="Title">
-        <input type="file" name="file" id="">
-        <button class="waves-effect waves-light btn" type="submit">Upload</button>
+        <input type="text" name="title" id="" placeholder="Title" required>
+        <textarea name="description" id="desc" class="materialize-textarea" placeholder="Description", required></textarea>
+        <div class="file-field input-field">
+          <div class="btn">
+            <span>Image</span>
+              <input type="file" name="file" id="" required>
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
+          <div class="center-align">
+            <button class="waves-effect waves-light btn-large" type="submit">Upload</button>
+          </div>
       </form>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
     })
