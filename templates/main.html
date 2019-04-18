@@ -64,6 +64,9 @@
         });
         document.querySelector(`#sec-${elem_index}`).className = 'active';
       };
+      ws.onclose = function(e){
+          console.log(e);
+        };
 
       const num_of_sections = document.getElementsByTagName('section').length;
       const nextBtn = document.querySelector('#next');

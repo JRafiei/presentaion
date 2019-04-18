@@ -2,7 +2,7 @@ import argparse
 import os
 from sanic import Sanic
 from sanic.response import json, html
-from sanic.websocket import WebSocketProtocol
+from sanic.websocket import WebSocketProtocol, ConnectionClosed
 from sanic_session import Session
 from sanic_jinja2 import SanicJinja2
 
@@ -26,10 +26,14 @@ def handle_request(request):
 async def feed(request, ws):
     clients.add(ws)
     while True:
-        recv_message = await ws.recv()
-        sec_id = recv_message
-        for client in clients:
-            await client.send(sec_id)
+        try:
+            recv_message = await ws.recv()
+            sec_id = recv_message
+            for client in clients:
+                await client.send(sec_id)
+        except ConnectionClosed:
+            clients.remove(ws)
+            break
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
