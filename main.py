@@ -3,8 +3,12 @@ import os
 from sanic import Sanic
 from sanic.response import json, html
 from sanic.websocket import WebSocketProtocol
+from sanic_session import Session
+from sanic_jinja2 import SanicJinja2
 
 app = Sanic()
+Session(app)
+jinja = SanicJinja2(app)
 
 clients = set()
 
@@ -13,13 +17,9 @@ app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
 
 
 @app.route('/')
+@jinja.template('main.html')
 def handle_request(request):
-    template = open('./main.html')
-    response = template.read()
-    response = response.replace('WS_HOST', args.host)
-    response = response.replace('WS_PORT', str(args.port))
-    template.close
-    return html(response)
+    return {'WS_HOST': args.host, 'WS_PORT': args.port}
 
 
 @app.websocket('/ws')
