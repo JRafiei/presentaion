@@ -8,6 +8,8 @@ from sanic_jinja2 import SanicJinja2
 from apps.models import db
 
 app = Sanic()
+app.config.UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploads')
+
 Session(app)
 jinja = SanicJinja2(app)
 
@@ -21,6 +23,18 @@ app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
 @jinja.template('main.html')
 def handle_request(request):
     return {'WS_HOST': args.host, 'WS_PORT': args.port}
+
+
+@app.route("/add", methods=['GET', 'POST'])
+@jinja.template('add_item.html')
+async def add_item(request):
+    if request.method == 'POST':
+        filename = request.files["file"][0].name
+        f = open(f'{app.config.UPLOAD_PATH}/{filename}', 'wb')
+        f.write(request.files["file"][0].body)
+        f.close()
+
+    return {}
 
 
 @app.websocket('/ws')
@@ -43,7 +57,9 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--port", default=8000,
                         help="server port")
     args = parser.parse_args()
-    db.connect()
-    db.create_tables([User, Tweet])
+    # db.connect()
+    # db.create_tables([User, Tweet])
+    if not os.path.exists(app.config.UPLOAD_PATH):
+        os.makedirs(app.config.UPLOAD_PATH)
     app.run(host=args.host, port=args.port)
 
