@@ -1,3 +1,4 @@
+import argparse
 import os
 from sanic import Sanic
 from sanic.response import json, html
@@ -15,6 +16,8 @@ app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
 def handle_request(request):
     template = open('./main.html')
     response = template.read()
+    response = response.replace('WS_HOST', args.host)
+    response = response.replace('WS_PORT', str(args.port))
     template.close
     return html(response)
 
@@ -29,5 +32,11 @@ async def feed(request, ws):
             await client.send(sec_id)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-H", "--host", default="localhost",
+                        help="server ip")
+    parser.add_argument("-p", "--port", default=8000,
+                        help="server port")
+    args = parser.parse_args()
+    app.run(host=args.host, port=args.port)
 

@@ -30,7 +30,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function(){
-            const ws = new WebSocket("ws://192.168.1.139:8000/ws");
+            const ws = new WebSocket("ws://WS_HOST:WS_PORT/ws");
             ws.onmessage = function (event) {
                 const elem_index = event.data;
 
