@@ -5,6 +5,7 @@ from sanic.response import json, html
 from sanic.websocket import WebSocketProtocol, ConnectionClosed
 from sanic_session import Session
 from sanic_jinja2 import SanicJinja2
+from apps.models import db
 
 app = Sanic()
 Session(app)
@@ -42,5 +43,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--port", default=8000,
                         help="server port")
     args = parser.parse_args()
+    db.connect()
+    db.create_tables([User, Tweet])
     app.run(host=args.host, port=args.port)
 
