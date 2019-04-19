@@ -1,7 +1,7 @@
 import argparse
 import os
 from sanic import Sanic
-from sanic.response import json, html
+from sanic.response import json, html, file
 from sanic.websocket import WebSocketProtocol, ConnectionClosed
 from sanic_session import Session
 from sanic_jinja2 import SanicJinja2
@@ -22,7 +22,14 @@ app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
 @app.route('/')
 @jinja.template('main.html')
 def handle_request(request):
-    return {'WS_HOST': args.host, 'WS_PORT': args.port}
+    items = Item.select()
+    return {'WS_HOST': args.host, 'WS_PORT': args.port, 'items': items}
+
+
+
+@app.route('/file/<filename>')
+async def handle_request(request, filename):
+    return await file(f'{app.config.UPLOAD_PATH}/{filename}')
 
 
 @app.route("/add", methods=['GET', 'POST'])

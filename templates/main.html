@@ -10,7 +10,7 @@
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-  <title>Document</title>
+  <title>Home</title>
   <style>
     body {
       text-align: center;
@@ -21,21 +21,31 @@
     .deactive {
       display: none;
     }
+    img {
+      width: auto;
+      height: 300px !important;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-  <div class="card-panel hoverable">
-    <section id="sec-1" class="active">
-      <img class="responsive-img" src="https://picsum.photos/400/200?image=1080" alt="">
-    </section>
-    <section id="sec-2" class="deactive">
-      <img class="responsive-img" src="https://picsum.photos/400/200?image=1081" alt="">
-    </section>
-    <section id="sec-3" class="deactive">
-      <img class="responsive-img" src="https://picsum.photos/400/200?image=1082" alt="">
-    </section>
+  <div class="card-panel">
+    {% for item in items %}
+      {% if loop.index == 1 %}
+        <section id="sec-{{ loop.index }}" class="active">
+      {% else %}
+        <section id="sec-{{ loop.index }}" class="deactive">
+      {% endif %}
+        <h4>{{ item.title }}</h4>
+        <img class="responsive-img" src="/file/{{item.filename}}">
+        <div class="row">
+          <div class="col offset-m2 m8">
+            <p>{{ item.description }}</p>
+          </div>
+        </div>
+      </section>
+    {% endfor %}
 
     <div class="btns">
       <button class="waves-effect waves-light btn" id="prev">
