@@ -10,7 +10,7 @@
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-  <title>Add Item</title>
+  <title>Edit Item</title>
 </head>
 
 <body>
@@ -22,21 +22,13 @@
         </div>
       {% endif %}
 
-      <h1>Add a new item</h1>
+      <h1>Edit this item</h1>
+      <img class="responsive-img" src="/file/{{item.filename}}">
       <form action="" method="post", enctype="multipart/form-data">
-        <input type="text" name="title" id="" placeholder="Title" >
-        <textarea name="description" id="desc" class="materialize-textarea" placeholder="Description"></textarea>
-        <div class="file-field input-field">
-          <div class="btn">
-            <span>Image</span>
-              <input type="file" name="file" id="" required>
-            </div>
-            <div class="file-path-wrapper">
-              <input class="file-path validate" type="text">
-            </div>
-          </div>
+        <input type="text" name="title" id="" placeholder="Title" value="{{ item.title }}">
+        <textarea name="description" id="desc" class="materialize-textarea" placeholder="Description">{{ item.description }}</textarea>
           <div class="center-align">
-            <button class="waves-effect waves-light btn-large" type="submit">Upload</button>
+            <button class="waves-effect waves-light btn-large" type="submit">Update</button>
           </div>
       </form>
     </div>

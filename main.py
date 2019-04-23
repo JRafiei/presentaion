@@ -1,7 +1,7 @@
 import argparse
 import os
 from sanic import Sanic
-from sanic.response import json, html, file
+from sanic.response import json, html, file, redirect
 from sanic.websocket import WebSocketProtocol, ConnectionClosed
 from sanic_session import Session
 from sanic_jinja2 import SanicJinja2
@@ -23,7 +23,9 @@ app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
 @jinja.template('main.html')
 def handle_request(request):
     items = Item.select()
-    return {'WS_HOST': args.host, 'WS_PORT': args.port, 'items': items}
+    show_edit_button = True if request.args.get('edit') == 'on' else False
+    return {'WS_HOST': args.host, 'WS_PORT': args.port,
+            'items': items, 'show_edit_button': show_edit_button}
 
 
 
@@ -47,6 +49,19 @@ async def add_item(request):
         )
         return {'message': "uploaded successfully!"}
     return {}
+
+
+@app.route("/edit/<item_id>", methods=['GET', 'POST'])
+@jinja.template('edit_item.html')
+async def edit_item(request, item_id):
+    item = Item.get(Item.id == item_id)
+    if request.method == 'POST':
+        item.title = request.form.get('title', item.title)
+        item.description = request.form.get('description', item.description)
+        item.save()
+        return redirect('/?edit=on')
+
+    return {'item': item}
 
 
 @app.websocket('/ws')

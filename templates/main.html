@@ -37,6 +37,14 @@
       {% else %}
         <section id="sec-{{ loop.index }}" class="deactive">
       {% endif %}
+
+      {% if show_edit_button %}
+        <a class="waves-effect waves-light btn" style="float:right" href="/edit/{{ item.id }}">
+          <span>Edit</span>
+          <i class="material-icons left">edit</i>
+        </a>
+      {% endif %}
+      
         <h4>{{ item.title }}</h4>
         <img class="responsive-img" src="/file/{{item.filename}}">
         <div class="row">
@@ -51,10 +59,10 @@
       <button class="waves-effect waves-light btn" id="prev">
         <span>previous</span>
         <i class="material-icons left">navigate_before</i>
-        </button>
-        <button class="waves-effect waves-light btn" id="next">
-          <span>next</span>
-          <i class="material-icons right">navigate_next</i>
+      </button>
+      <button class="waves-effect waves-light btn" id="next">
+        <span>next</span>
+        <i class="material-icons right">navigate_next</i>
       </button>
     </div>
   </div>
