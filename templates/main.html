@@ -104,7 +104,8 @@
       const num_of_sections = document.getElementsByTagName('section').length;
       const nextBtn = document.querySelector('#next');
       const prevBtn = document.querySelector('#prev');
-      nextBtn.addEventListener('click', function(e){
+
+      function go_forward() {
         const active_elem = document.querySelector('.active').getAttribute('id');
         const active_id = parseInt(active_elem.split("-")[1]);
         let next_id = active_id + 1;
@@ -113,8 +114,9 @@
         }
         // console.log(next_id);
         ws.send(next_id);
-      });
-      prevBtn.addEventListener('click', function(e){
+      }
+
+      function go_backward() {
         const active_elem = document.querySelector('.active').getAttribute('id');
         const active_id = parseInt(active_elem.split("-")[1]);
         let prev_id = active_id - 1;
@@ -123,7 +125,22 @@
         }
         // console.log(message);
         ws.send(prev_id);
-      });
+      }
+
+      nextBtn.addEventListener('click', go_forward);
+      prevBtn.addEventListener('click', go_backward);
+
+      document.onkeydown = function(e) {
+          e = e || window.event;
+          if (e.keyCode == '37') {
+            // left arrow
+            go_backward();
+          }
+          else if (e.keyCode == '39') {
+            // right arrow
+            go_forward();
+          }
+      }
     })
   </script>
 </body>
