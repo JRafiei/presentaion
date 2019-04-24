@@ -39,8 +39,9 @@ async def handle_request(request, filename):
 async def add_item(request):
     if request.method == 'POST':
         filename = request.files["file"][0].name
-        with open(f'{app.config.UPLOAD_PATH}/{filename}', 'wb') as f: 
-            f.write(request.files["file"][0].body)
+        if filename:
+            with open(f'{app.config.UPLOAD_PATH}/{filename}', 'wb') as f: 
+                f.write(request.files["file"][0].body)
 
         Item.create(
             title=request.form.get('title'),

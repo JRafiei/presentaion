@@ -13,9 +13,11 @@
   <title>Home</title>
   <style>
     body {
-      text-align: center;
       background: rgb(2,0,36);
       background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,95,121,1) 21%, rgba(0,212,255,1) 100%);
+    }
+    .item-title, .btns {
+      text-align: center;
     }
     .active {
       display: block;
@@ -25,6 +27,15 @@
     }
     .deactive {
       display: none;
+    }
+    li {
+      list-style-type: disc !important;
+      padding-bottom: 10px;
+      font-size: 16px;
+    }
+    center-block {
+      display: block;
+      margin: auto;
     }
   </style>
 </head>
@@ -40,17 +51,20 @@
       {% endif %}
 
       {% if show_edit_button %}
-        <a class="waves-effect waves-light btn" style="float:right" href="/edit/{{ item.id }}">
-          <span>Edit</span>
-          <i class="material-icons left">edit</i>
-        </a>
+      <a class="waves-effect waves-light btn" style="float:right" href="/edit/{{ item.id }}">
+        <span>Edit</span>
+        <i class="material-icons left">edit</i>
+      </a>
       {% endif %}
       
-        <h4>{{ item.title }}</h4>
-        <img class="responsive-img" src="/file/{{item.filename}}">
+      <h4 class="item-title">{{ item.title }}</h4>
+      
+      {% if item.filename %}
+        <img class="responsive-img center-block" src="/file/{{item.filename}}">
+      {% endif %}
         <div class="row">
-          <div class="col offset-m2 m8">
-            <p>{{ item.description }}</p>
+          <div class="col offset-m1 m8">
+            {{ item.description }}
           </div>
         </div>
       </section>
