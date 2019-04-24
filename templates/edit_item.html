@@ -1,43 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link href="favicon.ico" rel="icon" type="image/x-icon" />
-   <!--Import Google Icon Font-->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+{% extends "base.html" %}
 
-  <title>Edit Item</title>
-</head>
+{% block title %}Edit Item{% endblock %}
 
-<body>
-  <div class="container">
-    <div class="card-panel">
-      {% if message %}
-        <div class="card-panel green accent-3">
-          <h5 class="white-text text-darken-2">{{ message }}</h5>
+{% block content %}
+  <div class="card-panel">
+    {% if message %}
+      <div class="card-panel green accent-3">
+        <h5 class="white-text text-darken-2">{{ message }}</h5>
+      </div>
+    {% endif %}
+
+    <h1>Edit this item</h1>
+    <img class="responsive-img" src="/file/{{item.filename}}">
+    <form action="" method="post", enctype="multipart/form-data">
+      <input type="text" name="title" id="" placeholder="Title" value="{{ item.title }}">
+      <textarea name="description" id="desc" class="materialize-textarea" placeholder="Description">{{ item.description }}</textarea>
+        <div class="center-align">
+          <button class="waves-effect waves-light btn-large" type="submit">Update</button>
         </div>
-      {% endif %}
-
-      <h1>Edit this item</h1>
-      <img class="responsive-img" src="/file/{{item.filename}}">
-      <form action="" method="post", enctype="multipart/form-data">
-        <input type="text" name="title" id="" placeholder="Title" value="{{ item.title }}">
-        <textarea name="description" id="desc" class="materialize-textarea" placeholder="Description">{{ item.description }}</textarea>
-          <div class="center-align">
-            <button class="waves-effect waves-light btn-large" type="submit">Update</button>
-          </div>
-      </form>
-    </div>
+    </form>
   </div>
+{% endblock %}
 
+{% block js %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
     })
   </script>
-</body>
-</html>
+{% endblock %}

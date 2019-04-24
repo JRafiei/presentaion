@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link href="favicon.ico" rel="icon" type="image/x-icon" />
-   <!--Import Google Icon Font-->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+{% extends "base.html" %}
 
-  <title>Home</title>
+{% block title %}Home{% endblock %}
+
+{% block css %}
   <style>
     body {
       background: rgb(2,0,36);
@@ -38,10 +30,9 @@
       margin: auto;
     }
   </style>
-</head>
+{% endblock %}
 
-<body>
-  <div class="container">
+{% block content %}
   <div class="card-panel">
     {% for item in items %}
       {% if loop.index == 1 %}
@@ -81,10 +72,9 @@
       </button>
     </div>
   </div>
-  </div>
+{% endblock %}
 
-  <!-- Compiled and minified JavaScript -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+{% block js %}
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       const ws = new WebSocket("ws://{{ WS_HOST }}:{{ WS_PORT }}/ws");
@@ -143,5 +133,4 @@
       }
     })
   </script>
-</body>
-</html>
+{% endblock %}
