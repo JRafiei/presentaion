@@ -3,25 +3,25 @@
 {% block title %}RTC{% endblock %}
 
 {% block content %}
-    <div id="login">
-      <div class="input-field col s6">
-        <input id="username" placeholder="username" required="" autofocus>
-      </div>
-      <button id="login" class="btn-large">Login</button>
+
+  <div id="login">
+    <div class="input-field col s6">
+      <input id="username" placeholder="username" required="" autofocus>
     </div>
+    <button id="login" class="btn-large">Login</button>
+  </div>
+
+  <div id="call">
+    <video id="local" autoplay></video>
+    <video id="remote" autoplay></video>
 
     <div>
       <input id="username-to-call" placeholder="Username to call" />
       <button id="call" class="btn-large">Call</button>
       <button id="close-call" class="btn-large">Close call</button>
     </div>
-      
-      
-  <!-- <button id="get-access">Get access to camera</button> -->
-  <div id="call">
-    <video id="local" autoplay></video>
-    <video id="remote" autoplay></video>
   </div>
+
 {% endblock %}
 
 {% block js %}
@@ -45,15 +45,19 @@
         case 'login':
           // handleLogin
           if (data.success){
+            navigator.mediaDevices.getUserMedia(
+              { video: true }
+            ).then(
+              localStream => {
                 document.querySelector('div#login').style.display = 'none'
                 document.querySelector('div#call').style.display = 'block'
-                // document.querySelector('video#local').srcObject = localStream
+                document.querySelector('video#local').srcObject = localStream
 
                 const configuration = {
                   iceServers: [{ urls: 'stun:stun2.1.google.com:19302' }]
                 }
                 connection = new RTCPeerConnection(configuration)
-                // connection.addStream(localStream)
+                connection.addStream(localStream)
 
                 connection.ontrack = event => {
                   document.querySelector('video#remote').srcObject = event.stream
@@ -97,17 +101,12 @@
                     }
                   )
                 })
-            // navigator.mediaDevices.getUserMedia(
-            //   { video: true }
-            // ).then(
-            //   localStream => {
-
-            //   }
-            // ).catch(
-            //   error => {
-            //     console.error(error)
-            //   }
-            // );
+              }
+            ).catch(
+              error => {
+                console.error(error)
+              }
+            );
           } else {
             alert('Already logged in!');
           }
