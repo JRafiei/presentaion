@@ -1,5 +1,6 @@
 import argparse
 import os
+import json as json_module
 from sanic import Sanic
 from sanic.response import json, html, file, redirect
 from sanic.websocket import WebSocketProtocol, ConnectionClosed
@@ -13,6 +14,7 @@ app.config.UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploads')
 Session(app)
 jinja = SanicJinja2(app)
 
+args = None  # to be replaced by parse_args
 clients = set()
 
 STATIC_FOLDER = os.path.join(os.path.dirname(__file__), 'static')
@@ -63,6 +65,63 @@ async def edit_item(request, item_id):
         return redirect('/?edit=on')
 
     return {'item': item}
+
+
+@app.route("/rtc", methods=['GET', 'POST'])
+@jinja.template('rtc.html')
+async def rtc(request):
+    return {'WS_HOST': args.host, 'WS_PORT': args.port}
+
+
+users = {}
+
+@app.websocket('/ws-rtc')
+async def ws_rtc(request, ws):
+    while True:
+        message = await ws.recv()
+        try:
+            data = json_module.loads(message)
+        except Exception as error:
+            print('Invalid JSON', error)
+            data = {}
+
+        if data['type'] == 'login':
+            print('User logged in', data['username'])
+            if data['username'] in users:
+                await ws.send(json_module.dumps({'type': 'login', 'success': False}))
+            else:
+                users[data['username']] = ws
+                ws.username = data['username']
+                await ws.send(json_module.dumps({'type': 'login', 'success': True}))
+        elif data['type'] == 'offer':
+            print('Sending offer to: ', data['otherUsername'])
+            if users[data['otherUsername']] != None:
+                ws.otherUsername = data['otherUsername']
+                other_ws = users[data['otherUsername']]
+                other_ws.send(json_module.dumps({
+                    'type': 'offer',
+                    'offer': data['offer'],
+                    'username': ws.username
+                }))
+        elif data['type'] == 'answer':
+            print('Sending answer to: ', data.otherUsername)
+            if users[data['otherUsername']] != None:
+                ws.otherUsername = data['otherUsername']
+                other_ws = users[data['otherUsername']]
+                other_ws.send(json_module.dumps({
+                    'type': 'answer',
+                    'answer': data['answer'],
+                }))
+        elif data['type'] == 'candidate':
+            print('Sending candidate to:', data.otherUsername)
+            if users[data['otherUsername']] != None:
+                ws.otherUsername = data['otherUsername']
+                other_ws = users[data['otherUsername']]
+                other_ws.send(json_module.dumps({
+                    'type': 'candidate',
+                    'candidate': data.candidate
+                }))
+
 
 
 @app.websocket('/ws')
