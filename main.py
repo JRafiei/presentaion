@@ -104,35 +104,35 @@ async def ws_rtc(request, ws):
             if users[data['otherUsername']] != None:
                 ws.otherUsername = data['otherUsername']
                 other_ws = users[data['otherUsername']]
-                other_ws.send(json_module.dumps({
+                await other_ws.send(json_module.dumps({
                     'type': 'offer',
                     'offer': data['offer'],
                     'username': ws.username
                 }))
         elif data['type'] == 'answer':
-            print('Sending answer to: ', data.otherUsername)
+            print('Sending answer to: ', data['otherUsername'])
             if users[data['otherUsername']] != None:
                 ws.otherUsername = data['otherUsername']
                 other_ws = users[data['otherUsername']]
-                other_ws.send(json_module.dumps({
+                await other_ws.send(json_module.dumps({
                     'type': 'answer',
                     'answer': data['answer'],
                 }))
         elif data['type'] == 'candidate':
-            print('Sending candidate to:', data.otherUsername)
+            print('Sending candidate to:', data['otherUsername'])
             if users[data['otherUsername']] != None:
                 ws.otherUsername = data['otherUsername']
                 other_ws = users[data['otherUsername']]
-                other_ws.send(json_module.dumps({
+                await other_ws.send(json_module.dumps({
                     'type': 'candidate',
-                    'candidate': data.candidate
+                    'candidate': data['candidate']
                 }))
         elif data['type'] == 'close':
-            print('Disconnecting from', data.otherUsername)
+            print('Disconnecting from', data['otherUsername'])
             users[data['otherUsername']].otherUsername = None
             if users[data['otherUsername']] != None:
                 other_ws = users[data['otherUsername']]
-                other_ws.send(json_module.dumps({
+                await other_ws.send(json_module.dumps({
                     'type': 'close',
                 }))
 

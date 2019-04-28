@@ -2,6 +2,15 @@
 
 {% block title %}RTC{% endblock %}
 
+{% block css %}
+  <style>
+    video {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+{% endblock css %}
+
 {% block content %}
 
   <div id="login">
@@ -12,8 +21,14 @@
   </div>
 
   <div id="call" style="display: none">
-    <video id="local" autoplay></video>
-    <video id="remote" autoplay></video>
+    <div class="row">
+        <div class="col m6">
+          <video id="local" autoplay></video>
+        </div>
+        <div class="col m6">
+          <video id="remote" autoplay></video>
+        </div>
+    </div>
 
     <div>
       <input id="username-to-call" placeholder="Username to call" />
@@ -65,6 +80,8 @@
       }
     }
 
+    let otherUsername
+
     const sendMessage = message => {
       ws.send(JSON.stringify(message))
     }
@@ -101,14 +118,15 @@
             connection.addStream(localStream)
 
             connection.ontrack = event => {
-              document.querySelector('video#remote').srcObject = event.stream
+              document.querySelector('video#remote').srcObject = event.streams[0]
             }
 
             connection.onicecandidate = event => {
               if (event.candidate) {
                 sendMessage({
                   type: 'candidate',
-                  candidate: event.candidate
+                  candidate: event.candidate,
+                  otherUsername: otherUsername
                 })
               }
             }
@@ -122,8 +140,6 @@
         alert('😞 Username already taken')
       }
     }
-
-    let otherUsername
 
     document.querySelector('button#call').addEventListener('click', () => {
       const callToUsername = document.querySelector('input#username-to-call').value
@@ -154,6 +170,7 @@
     })
 
     const handleOffer = (offer, username) => {
+      otherUsername = username  // for onicecandidate
       connection.setRemoteDescription(new RTCSessionDescription(offer))
       connection.createAnswer(
         answer => {
@@ -161,7 +178,7 @@
           sendMessage({
             type: 'answer',
             answer: answer,
-            otherUsername: username
+            otherUsername: otherUsername
           })
         },
         error => {
@@ -181,7 +198,8 @@
 
     document.querySelector('button#close-call').addEventListener('click', () => {
       sendMessage({
-        type: 'close'
+        type: 'close',
+        otherUsername: otherUsername
       })
       handleClose()
     })
@@ -191,7 +209,7 @@
       document.querySelector('video#remote').src = null
       connection.close()
       connection.onicecandidate = null
-      connection.onaddstream = null
+      connection.ontrack = null
     }
   </script>
 {% endblock %}
