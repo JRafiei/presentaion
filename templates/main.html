@@ -3,33 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block css %}
-  <style>
-    body {
-      background: rgb(2,0,36);
-      background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,95,121,1) 21%, rgba(0,212,255,1) 100%);
-    }
-    .item-title, .btns {
-      text-align: center;
-    }
-    .active {
-      display: block;
-    }
-    .card-panel {
-      min-height: 600px;
-    }
-    .deactive {
-      display: none;
-    }
-    li {
-      list-style-type: disc !important;
-      padding-bottom: 10px;
-      font-size: 16px;
-    }
-    center-block {
-      display: block;
-      margin: auto;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/style.css">
 {% endblock %}
 
 {% block content %}
@@ -54,8 +28,10 @@
         <img class="responsive-img center-block" src="/file/{{item.filename}}">
       {% endif %}
         <div class="row">
-          <div class="col offset-m1 m8">
-            {{ item.description }}
+          <div class="col offset-m1 m10">
+            <div class="item-desc">
+              {{ item.description|replace('\n', '<br>') }}
+            </div>
           </div>
         </div>
       </section>

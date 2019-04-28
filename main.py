@@ -19,6 +19,11 @@ clients = set()
 
 STATIC_FOLDER = os.path.join(os.path.dirname(__file__), 'static')
 app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
+app.static('/static/style.css', os.path.join(STATIC_FOLDER, 'style.css'))
+app.static('/static/materialize.min.css', os.path.join(STATIC_FOLDER, 'materialize.min.css'))
+app.static('/static/materialize.min.js', os.path.join(STATIC_FOLDER, 'materialize.min.js'))
+app.static('/static/material_icons.css', os.path.join(STATIC_FOLDER, 'material_icons.css'))
+app.static('/static/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2', os.path.join(STATIC_FOLDER, 'flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'))
 
 
 @app.route('/')
