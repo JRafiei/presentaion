@@ -1,0 +1,26 @@
+body {
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,95,121,1) 21%, rgba(0,212,255,1) 100%);
+}
+.item-title, .btns {
+    text-align: center;
+}
+.item-desc {
+    font-size: 20px;
+}
+.active {
+    display: block;
+}
+.card-panel {
+    min-height: 600px;
+}
+.deactive {
+    display: none;
+}
+li {
+    list-style-type: disc !important;
+}
+center-block {
+    display: block;
+    margin: auto;
+}
