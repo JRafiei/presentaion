@@ -24,6 +24,7 @@ app.static('/static/materialize.min.css', os.path.join(STATIC_FOLDER, 'materiali
 app.static('/static/materialize.min.js', os.path.join(STATIC_FOLDER, 'materialize.min.js'))
 app.static('/static/material_icons.css', os.path.join(STATIC_FOLDER, 'material_icons.css'))
 app.static('/static/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2', os.path.join(STATIC_FOLDER, 'flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'))
+app.static('/static/adapter-latest.js', os.path.join(STATIC_FOLDER, 'adapter-latest.js'))
 
 
 @app.route('/')
@@ -126,7 +127,14 @@ async def ws_rtc(request, ws):
                     'type': 'candidate',
                     'candidate': data.candidate
                 }))
-
+        elif data['type'] == 'close':
+            print('Disconnecting from', data.otherUsername)
+            users[data['otherUsername']].otherUsername = None
+            if users[data['otherUsername']] != None:
+                other_ws = users[data['otherUsername']]
+                other_ws.send(json_module.dumps({
+                    'type': 'close',
+                }))
 
 
 @app.websocket('/ws')

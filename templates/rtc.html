@@ -11,7 +11,7 @@
     <button id="login" class="btn-large">Login</button>
   </div>
 
-  <div id="call">
+  <div id="call" style="display: none">
     <video id="local" autoplay></video>
     <video id="remote" autoplay></video>
 
@@ -25,129 +25,48 @@
 {% endblock %}
 
 {% block js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script>
-    const sendMessage = message => {
-      ws.send(JSON.stringify(message))
-    }
+  <script src="/static/materialize.min.js"></script>
+  <script src="/static/adapter-latest.js"></script>
 
+  <script>
     const ws = new WebSocket('ws://{{ WS_HOST }}:{{ WS_PORT }}/ws-rtc')
 
     ws.onopen = () => {
       console.log('Connected to the signaling server')
     }
 
+    ws.onerror = err => {
+      console.error(err)
+    }
+
+    
+
     ws.onmessage = msg => {
       const data = JSON.parse(msg.data)
 
       switch (data.type) {
         case 'login':
-          // handleLogin
-          if (data.success){
-            navigator.mediaDevices.getUserMedia(
-              { video: true }
-            ).then(
-              localStream => {
-                document.querySelector('div#login').style.display = 'none'
-                document.querySelector('div#call').style.display = 'block'
-                document.querySelector('video#local').srcObject = localStream
-
-                const configuration = {
-                  iceServers: [{ urls: 'stun:stun2.1.google.com:19302' }]
-                }
-                connection = new RTCPeerConnection(configuration)
-                connection.addStream(localStream)
-
-                connection.ontrack = event => {
-                  document.querySelector('video#remote').srcObject = event.stream
-                }
-
-                connection.onicecandidate = event => {
-                  if (event.candidate) {
-                    sendMessage({
-                      type: 'candidate',
-                      candidate: event.candidate
-                    })
-                  }
-                }
-
-                let otherUsername
-
-                document.querySelector('button#call').addEventListener('click', () => {
-                  const callToUsername = document.querySelector('input#username-to-call').value
-
-                  if (callToUsername === '') {
-                    alert('Enter a username 😉')
-                    return
-                  }
-
-                  otherUsername = callToUsername
-
-                  // create an offer
-                  connection.createOffer(
-                    offer => {
-                      sendMessage({
-                        type: 'offer',
-                        offer: offer,
-                        otherUsername: otherUsername
-                      })
-
-                      connection.setLocalDescription(offer)
-                    },
-                    error => {
-                      alert('Error when creating an offer')
-                      console.error(error)
-                    }
-                  )
-                })
-              }
-            ).catch(
-              error => {
-                console.error(error)
-              }
-            );
-          } else {
-            alert('Already logged in!');
-          }
+          handleLogin(data.success)
           break
         case 'offer':
-          const handleOffer = (offer, username) => {
-            connection.setRemoteDescription(new RTCSessionDescription(offer))
-            connection.createAnswer(
-              answer => {
-                connection.setLocalDescription(answer)
-                sendMessage({
-                  type: 'answer',
-                  answer: answer,
-                  otherUsername: username
-                })
-              },
-              error => {
-                alert('Error when creating an answer')
-                console.error(error)
-              }
-            )
-          }
           handleOffer(data.offer, data.username)
           break
         case 'answer':
-          const handleAnswer = answer => {
-            connection.setRemoteDescription(new RTCSessionDescription(answer))
-          }
           handleAnswer(data.answer)
           break
         case 'candidate':
-          const handleCandidate = candidate => {
-            connection.addIceCandidate(new RTCIceCandidate(candidate))
-          }
           handleCandidate(data.candidate)
+          break
+        case 'close':
+          handleClose()
+          break
+        default:
           break
       }
     }
 
-    ws.onerror = err => {
-      console.error(err)
+    const sendMessage = message => {
+      ws.send(JSON.stringify(message))
     }
 
     document.querySelector('button#login').addEventListener('click', event => {
@@ -164,5 +83,115 @@
       })
     })
 
+    handleLogin = success => {
+      if (success){
+        document.querySelector('div#login').style.display = 'none'
+        document.querySelector('div#call').style.display = 'block'
+        navigator.mediaDevices.getUserMedia(
+          { video: true }
+        ).then(
+          localStream => {
+            document.querySelector('video#local').srcObject = localStream
+
+            const configuration = {
+              iceServers: [{ urls: 'stun:stun2.1.google.com:19302' }]
+            }
+            connection = new RTCPeerConnection(configuration)
+
+            connection.addStream(localStream)
+
+            connection.ontrack = event => {
+              document.querySelector('video#remote').srcObject = event.stream
+            }
+
+            connection.onicecandidate = event => {
+              if (event.candidate) {
+                sendMessage({
+                  type: 'candidate',
+                  candidate: event.candidate
+                })
+              }
+            }
+          }
+        ).catch(
+          error => {
+            console.error(error)
+          }
+        );
+      } else {
+        alert('😞 Username already taken')
+      }
+    }
+
+    let otherUsername
+
+    document.querySelector('button#call').addEventListener('click', () => {
+      const callToUsername = document.querySelector('input#username-to-call').value
+
+      if (callToUsername === '') {
+        alert('Enter a username 😉')
+        return
+      }
+
+      otherUsername = callToUsername
+
+      // create an offer
+      connection.createOffer(
+        offer => {
+          sendMessage({
+            type: 'offer',
+            offer: offer,
+            otherUsername: otherUsername
+          })
+
+          connection.setLocalDescription(offer)
+        },
+        error => {
+          alert('Error when creating an offer')
+          console.error(error)
+        }
+      )
+    })
+
+    const handleOffer = (offer, username) => {
+      connection.setRemoteDescription(new RTCSessionDescription(offer))
+      connection.createAnswer(
+        answer => {
+          connection.setLocalDescription(answer)
+          sendMessage({
+            type: 'answer',
+            answer: answer,
+            otherUsername: username
+          })
+        },
+        error => {
+          alert('Error when creating an answer')
+          console.error(error)
+        }
+      )
+    }
+
+    const handleAnswer = answer => {
+      connection.setRemoteDescription(new RTCSessionDescription(answer))
+    }
+
+    const handleCandidate = candidate => {
+      connection.addIceCandidate(new RTCIceCandidate(candidate))
+    }
+
+    document.querySelector('button#close-call').addEventListener('click', () => {
+      sendMessage({
+        type: 'close'
+      })
+      handleClose()
+    })
+
+    const handleClose = () => {
+      otherUsername = null
+      document.querySelector('video#remote').src = null
+      connection.close()
+      connection.onicecandidate = null
+      connection.onaddstream = null
+    }
   </script>
 {% endblock %}
