@@ -5,7 +5,7 @@ from sanic.response import json, html, file, redirect
 from sanic.websocket import WebSocketProtocol, ConnectionClosed
 from sanic_session import Session
 from sanic_jinja2 import SanicJinja2
-from apps.models import db, Item
+from apps.models import db, Item, Presentation
 
 app = Sanic()
 app.config.UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -92,7 +92,7 @@ if __name__ == "__main__":
                         help="server port")
     args = parser.parse_args()
     db.connect()
-    db.create_tables([Item])
+    db.create_tables([Item, Presentation])
     if not os.path.exists(app.config.UPLOAD_PATH):
         os.makedirs(app.config.UPLOAD_PATH)
     app.run(host=args.host, port=args.port)

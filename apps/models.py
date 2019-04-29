@@ -10,7 +10,13 @@ class BaseModel(Model):
         database = db
 
 
+class Presentation(BaseModel):
+    title = CharField()
+    icon = CharField()
+
+
 class Item(BaseModel):
+    presentation = ForeignKeyField(Presentation, backref='items', null=True)
     title = CharField()
     description = TextField()
     filename = CharField()
