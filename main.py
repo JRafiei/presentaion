@@ -27,7 +27,7 @@ app.static('/static/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2', os.path.join(STATIC_FOL
 @app.route('/')
 @jinja.template('main.html')
 def handle_request(request):
-    items = Item.select()
+    items = Item.select().order_by(Item.order)
     show_edit_button = True if request.args.get('edit') == 'on' else False
     return {'WS_HOST': args.host, 'WS_PORT': args.port,
             'items': items, 'show_edit_button': show_edit_button}

@@ -14,6 +14,7 @@
     <img class="responsive-img" src="/file/{{item.filename}}">
     <form action="" method="post", enctype="multipart/form-data">
       <input type="text" name="title" id="" placeholder="Title" value="{{ item.title }}">
+      <input type="number" name="order" id="" placeholder="Order" value="{{ item.order }}">
       <textarea name="description" id="desc" class="materialize-textarea" placeholder="Description">{{ item.description }}</textarea>
         <div class="center-align">
           <button class="waves-effect waves-light btn-large" type="submit">Update</button>

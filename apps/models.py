@@ -14,5 +14,6 @@ class Item(BaseModel):
     title = CharField()
     description = TextField()
     filename = CharField()
+    order = SmallIntegerField(null=True)
     created_date = DateTimeField(default=datetime.datetime.now)
     
