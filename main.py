@@ -33,6 +33,15 @@ def handle_request(request):
             'items': items, 'show_edit_button': show_edit_button}
 
 
+@app.route('/present/<present_id>')
+@jinja.template('presentation.html')
+def present(request, present_id):
+    items = Item.select().where(Item.presentation == present_id).order_by(Item.order)
+    show_edit_button = True if request.args.get('edit') == 'on' else False
+    return {'WS_HOST': args.host, 'WS_PORT': args.port,
+            'items': items, 'show_edit_button': show_edit_button}
+
+
 
 @app.route('/file/<filename>')
 async def handle_request(request, filename):

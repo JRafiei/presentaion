@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="/static/style.css">
+{% endblock %}
+
+{% block content %}
+  <div class="card-panel">
+    {% for item in items %}
+      {% if loop.index == 1 %}
+        <section id="sec-{{ loop.index }}" class="active">
+      {% else %}
+        <section id="sec-{{ loop.index }}" class="deactive">
+      {% endif %}
+
+      {% if show_edit_button %}
+      <a class="waves-effect waves-light btn" style="float:right" href="/edit/{{ item.id }}">
+        <span>Edit</span>
+        <i class="material-icons left">edit</i>
+      </a>
+      {% endif %}
+      
+      <h4 class="item-title">{{ item.title }}</h4>
+      
+      {% if item.filename %}
+        <img class="responsive-img center-block" src="/file/{{item.filename}}">
+      {% endif %}
+        <div class="row">
+          <div class="col offset-m1 m10">
+            <div class="item-desc">
+              {{ item.description|replace('\n', '<br>') }}
+            </div>
+          </div>
+        </div>
+      </section>
+    {% endfor %}
+
+    <div class="btns">
+      <button class="waves-effect waves-light btn" id="prev">
+        <span>previous</span>
+        <i class="material-icons left">navigate_before</i>
+      </button>
+      <button class="waves-effect waves-light btn" id="next">
+        <span>next</span>
+        <i class="material-icons right">navigate_next</i>
+      </button>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const ws = new WebSocket("ws://{{ WS_HOST }}:{{ WS_PORT }}/ws");
+      ws.onmessage = function (event) {
+        const elem_index = event.data;
+
+        const sections = document.querySelectorAll('section');
+        sections.forEach(function (section) {
+          section.className = 'deactive';
+        });
+        document.querySelector(`#sec-${elem_index}`).className = 'active';
+      };
+      ws.onclose = function(e){
+          console.log(e);
+        };
+
+      const num_of_sections = document.getElementsByTagName('section').length;
+      const nextBtn = document.querySelector('#next');
+      const prevBtn = document.querySelector('#prev');
+
+      function go_forward() {
+        const active_elem = document.querySelector('.active').getAttribute('id');
+        const active_id = parseInt(active_elem.split("-")[1]);
+        let next_id = active_id + 1;
+        if (active_id == num_of_sections){
+          next_id = 1;
+        }
+        // console.log(next_id);
+        ws.send(next_id);
+      }
+
+      function go_backward() {
+        const active_elem = document.querySelector('.active').getAttribute('id');
+        const active_id = parseInt(active_elem.split("-")[1]);
+        let prev_id = active_id - 1;
+        if (prev_id == 0){
+          prev_id = num_of_sections;
+        }
+        // console.log(message);
+        ws.send(prev_id);
+      }
+
+      nextBtn.addEventListener('click', go_forward);
+      prevBtn.addEventListener('click', go_backward);
+
+      document.onkeydown = function(e) {
+          e = e || window.event;
+          if (e.keyCode == '37') {
+            // left arrow
+            go_backward();
+          }
+          else if (e.keyCode == '39') {
+            // right arrow
+            go_forward();
+          }
+      }
+    })
+  </script>
+{% endblock %}
