@@ -33,14 +33,13 @@ def handle_request(request):
             'items': items, 'show_edit_button': show_edit_button}
 
 
-@app.route('/present/<present_id>')
+@app.route('/present/<presentation_id>')
 @jinja.template('presentation.html')
-def present(request, present_id):
-    items = Item.select().where(Item.presentation == present_id).order_by(Item.order)
+def present(request, presentation_id):
+    items = Item.select().where(Item.presentation == presentation_id).order_by(Item.order)
     show_edit_button = True if request.args.get('edit') == 'on' else False
     return {'WS_HOST': args.host, 'WS_PORT': args.port,
             'items': items, 'show_edit_button': show_edit_button}
-
 
 
 @app.route('/file/<filename>')
@@ -48,9 +47,9 @@ async def handle_request(request, filename):
     return await file(f'{app.config.UPLOAD_PATH}/{filename}')
 
 
-@app.route("/add", methods=['GET', 'POST'])
+@app.route("/present/<presentation_id>/add", methods=['GET', 'POST'])
 @jinja.template('add_item.html')
-async def add_item(request):
+async def add_item(request, presentation_id):
     if request.method == 'POST':
         filename = request.files["file"][0].name
         if filename:
@@ -60,7 +59,8 @@ async def add_item(request):
         Item.create(
             title=request.form.get('title'),
             description=request.form.get('description'),
-            filename=filename
+            filename=filename,
+            presentation=presentation_id
         )
         return {'message': "uploaded successfully!"}
     return {}
@@ -72,6 +72,7 @@ async def edit_item(request, item_id):
     item = Item.get(Item.id == item_id)
     if request.method == 'POST':
         item.title = request.form.get('title', item.title)
+        item.order = request.form.get('order', item.order)
         item.description = request.form.get('description', item.description)
         item.save()
         return redirect('/?edit=on')
