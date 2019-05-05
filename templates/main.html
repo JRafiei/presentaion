@@ -8,44 +8,25 @@
 
 {% block content %}
   <div class="card-panel">
-    {% for item in items %}
-      {% if loop.index == 1 %}
-        <section id="sec-{{ loop.index }}" class="active">
-      {% else %}
-        <section id="sec-{{ loop.index }}" class="deactive">
-      {% endif %}
-
-      {% if show_edit_button %}
-      <a class="waves-effect waves-light btn" style="float:right" href="/edit/{{ item.id }}">
-        <span>Edit</span>
-        <i class="material-icons left">edit</i>
-      </a>
-      {% endif %}
-      
-      <h4 class="item-title">{{ item.title }}</h4>
-      
-      {% if item.filename %}
-        <img class="responsive-img center-block" src="/file/{{item.filename}}">
-      {% endif %}
-        <div class="row">
-          <div class="col offset-m1 m10">
-            <div class="item-desc">
-              {{ item.description|replace('\n', '<br>') }}
+    {% if show_edit_button %}
+    <a class="waves-effect waves-light btn" style="float:right" href="/edit/{{ item.id }}">
+      <span>Edit</span>
+      <i class="material-icons left">edit</i>
+    </a>
+    {% endif %}
+    <div class="row">
+      {% for presentaion in presentaions %}
+        <div class="col s4">
+            <div class="card">
+              <div class="card-image">
+                <img src="/file/{{presentaion.icon}}">
+              </div>
+              <div class="card-action center-align">
+                <a href="{{ presentaion.get_url() }}">{{ presentaion.title }}</a>
+              </div>
             </div>
-          </div>
         </div>
-      </section>
-    {% endfor %}
-
-    <div class="btns">
-      <button class="waves-effect waves-light btn" id="prev">
-        <span>previous</span>
-        <i class="material-icons left">navigate_before</i>
-      </button>
-      <button class="waves-effect waves-light btn" id="next">
-        <span>next</span>
-        <i class="material-icons right">navigate_next</i>
-      </button>
+      {% endfor %}
     </div>
   </div>
 {% endblock %}
