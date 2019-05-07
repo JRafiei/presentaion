@@ -17,7 +17,7 @@ jinja = SanicJinja2(app)
 clients = set()
 
 STATIC_FOLDER = os.path.join(os.path.dirname(__file__), 'static')
-app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
+app.static('/static/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
 app.static('/static/style.css', os.path.join(STATIC_FOLDER, 'style.css'))
 app.static('/static/materialize.min.css', os.path.join(STATIC_FOLDER, 'materialize.min.css'))
 app.static('/static/materialize.min.js', os.path.join(STATIC_FOLDER, 'materialize.min.js'))
