@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import os
 from sanic import Sanic
 from sanic.response import file, redirect
@@ -15,12 +16,7 @@ jinja = SanicJinja2(app, session=session, pkg_name='pkg')
 clients = set()
 
 STATIC_FOLDER = os.path.join(os.path.dirname(__file__), 'static')
-app.static('/favicon.ico', os.path.join(STATIC_FOLDER, 'favicon.ico'))
-app.static('/static/style.css', os.path.join(STATIC_FOLDER, 'style.css'))
-app.static('/static/materialize.min.css', os.path.join(STATIC_FOLDER, 'materialize.min.css'))
-app.static('/static/materialize.min.js', os.path.join(STATIC_FOLDER, 'materialize.min.js'))
-app.static('/static/material_icons.css', os.path.join(STATIC_FOLDER, 'material_icons.css'))
-app.static('/static/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2', os.path.join(STATIC_FOLDER, 'flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'))
+app.static('/favicon.ico', STATIC_FOLDER)
 
 
 @app.route('/')
@@ -88,7 +84,7 @@ async def feed(request, ws):
             sec_id = recv_message
             for client in clients:
                 await client.send(sec_id)
-        except ConnectionClosed:
+        except asyncio.CancelledError as e:
             clients.remove(ws)
             break
 
@@ -105,4 +101,3 @@ if __name__ == "__main__":
     if not os.path.exists(app.config.UPLOAD_PATH):
         os.makedirs(app.config.UPLOAD_PATH)
     app.run(host=args.host, port=args.port)
-
