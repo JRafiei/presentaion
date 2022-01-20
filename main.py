@@ -1,17 +1,16 @@
 import argparse
 import os
 from sanic import Sanic
-from sanic.response import json, html, file, redirect
-from sanic.websocket import WebSocketProtocol, ConnectionClosed
-from sanic_session import Session
+from sanic.response import file, redirect
+from sanic_session import Session, InMemorySessionInterface
 from sanic_jinja2 import SanicJinja2
 from apps.models import db, Item, Presentation
 
-app = Sanic()
+app = Sanic("presentation")
 app.config.UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploads')
 
-Session(app)
-jinja = SanicJinja2(app)
+session = Session(app, interface=InMemorySessionInterface())
+jinja = SanicJinja2(app, session=session, pkg_name='pkg')
 
 clients = set()
 
