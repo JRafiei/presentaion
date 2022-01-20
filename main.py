@@ -7,6 +7,7 @@ from sanic_session import Session, InMemorySessionInterface
 from sanic_jinja2 import SanicJinja2
 from apps.models import db, Item, Presentation
 
+args = None
 app = Sanic("presentation")
 app.config.UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploads')
 
@@ -22,10 +23,10 @@ app.static('/favicon.ico', STATIC_FOLDER)
 @app.route('/')
 @jinja.template('main.html')
 def handle_request(request):
-    items = Item.select().order_by(Item.order)
+    presentaions = Presentation.select()
     show_edit_button = True if request.args.get('edit') == 'on' else False
     return {'WS_HOST': args.host, 'WS_PORT': args.port,
-            'items': items, 'show_edit_button': show_edit_button}
+            'presentaions': presentaions, 'show_edit_button': show_edit_button}
 
 
 @app.route('/present/<presentation_id>')
@@ -70,7 +71,7 @@ async def edit_item(request, item_id):
         item.order = request.form.get('order', item.order)
         item.description = request.form.get('description', item.description)
         item.save()
-        return redirect('/?edit=on')
+        return redirect(f'/present/{item.presentation_id}/?edit=on')
 
     return {'item': item}
 

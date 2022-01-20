@@ -14,6 +14,9 @@ class Presentation(BaseModel):
     title = CharField()
     icon = CharField()
 
+    def get_url(self):
+        return f'/present/{self.id}'
+
 
 class Item(BaseModel):
     presentation = ForeignKeyField(Presentation, backref='items', null=True)
